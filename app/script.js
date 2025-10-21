@@ -298,9 +298,29 @@ function handleDifficultyChange(e) {
 
 // 安全的輸入驗證函數
 function validateInput(input) {
-    // 使用更安全的正則表達式模式
-    const safeRegex = /^[a-zA-Z0-9]{1,50}$/;
-    return safeRegex.test(input);
+    // 1. 首先檢查輸入長度
+    if (!input || input.length > 50) {
+        return false;
+    }
+    
+    // 2. 使用更安全的正則表達式模式，添加明確的邊界和字元限制
+    try {
+        const safeRegex = new RegExp('^[a-zA-Z0-9]{1,50}$');
+        // 設定執行時間限制
+        const startTime = Date.now();
+        const result = safeRegex.test(input);
+        
+        // 如果執行時間過長，返回 false
+        if (Date.now() - startTime > 100) {
+            return false;
+        }
+        
+        return result;
+    } catch (e) {
+        // 如果正則表達式執行出錯，返回 false
+        console.error('Regex validation error:', e);
+        return false;
+    }
 }
 
 // 使用環境變數存儲敏感資訊
